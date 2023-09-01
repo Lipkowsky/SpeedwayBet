@@ -23,6 +23,7 @@ function App() {
       {!currentRoomId && <CreateRoom socket={socket}></CreateRoom>}
       {currentRoomId && (
         <GameComponent
+        socket={socket}
           currentRoomUsersNumber={currentRoomUsersNumber}
           currentRoomId={currentRoomId}
         ></GameComponent>
