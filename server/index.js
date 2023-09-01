@@ -21,6 +21,7 @@ const serverList = new Schema({
   roomId: String,
   raceValue: String,
   gameStatus: String,
+  phase: String,
 });
 const ServerList = mongoose.model("ServerList", serverList);
 
@@ -48,6 +49,13 @@ io.on("connection", async (socket) => {
       roomId: data.roomId,
       usersNumber: users.size,
     });
+    socket
+      .to(data.roomId)
+      .emit("message", {
+        message: `You joined room: ${data.roomId}`,
+        roomId: data.roomId,
+        usersNumber: users.size,
+      });
   });
   // #################################################################################
   socket.on("select_race_value", async (data) => {
@@ -69,6 +77,7 @@ io.on("connection", async (socket) => {
       },
       {
         gameStatus: "START",
+        phase: "1",
       },
       { new: true }
     );
@@ -76,7 +85,7 @@ io.on("connection", async (socket) => {
     const server = await ServerList.findOne({
       roomId: data.roomId,
     });
- 
+
     io.in(data.roomId).emit(data.roomId, server);
   });
 });
