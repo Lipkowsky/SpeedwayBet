@@ -10,10 +10,9 @@ const socket = io.connect("http://localhost:3001");
 function App() {
   const [currentRoomId, setCurrentRoomId] = useState("");
   const [currentRoomUsersNumber, setCurrentRoomUsersNumber] = useState(0);
-  console.log(currentRoomId)
+
   useEffect(() => {
-    console.log('XD')
-    socket.on('message', (data) => {
+    socket.on('updateNumerOfUsers', (data) => {
       setCurrentRoomUsersNumber(data.usersNumber);
     });
     socket.on("joined_room", (data) => {
