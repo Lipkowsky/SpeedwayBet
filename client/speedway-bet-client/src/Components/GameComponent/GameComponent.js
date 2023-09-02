@@ -17,6 +17,7 @@ export default function GameComponent(props) {
 
   const [gameStatus, setGameStatusType] = useState("BEFORE_START");
   const [score, setScoreValue] = useState(0);
+  const [endGame, setEndGame] = useState(false);
 
   const [raceResults, setRaceResults] = useState({
     selectedOptionRedResult: 0,
@@ -24,12 +25,6 @@ export default function GameComponent(props) {
     selectedOptionWhiteResult: 0,
     selectedOptionYellowResult: 0,
   });
-
-  const nextRaceEvent = () => {
-    socket.emit("nextRaceEvent", {
-      roomId: currentRoomId,
-    });
-  };
 
   useEffect(() => {
     socket.on(currentRoomId, (data) => {
@@ -57,6 +52,12 @@ export default function GameComponent(props) {
       setScoreValue(data.score);
     });
   }, [socket]);
+
+  useEffect(() => {
+    if (Number(currentRace) === Number(raceValue)) {
+      setEndGame(true);
+    }
+  }, [currentRace]);
 
   return (
     <div>
@@ -94,10 +95,15 @@ export default function GameComponent(props) {
           </div>
         )}
         {gameStatus === "RESULTS_DONE" && (
-          <DisplayResultGameComponent socket={socket} host={host} currentRoomId={currentRoomId} raceResults={raceResults}/>
+          <DisplayResultGameComponent
+            socket={socket}
+            host={host}
+            currentRoomId={currentRoomId}
+            raceResults={raceResults}
+          />
         )}
 
-        {Number(currentRace) === Number(raceValue) && (
+        {endGame && (
           <div>
             Koniec gry, ilość wyścigów: {currentRace} / {raceValue}
           </div>
