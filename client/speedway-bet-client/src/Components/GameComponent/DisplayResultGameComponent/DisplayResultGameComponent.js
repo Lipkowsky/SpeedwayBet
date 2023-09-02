@@ -3,7 +3,7 @@ import React from "react";
 export default function DisplayResultGameComponent(props) {
   const host = props.host
   const socket = props.socket 
-  const raceResults = props.socket;
+  const raceResults = props.raceResults
   const currentRoomId = props.currentRoomId;
 
   const nextRaceEvent = () => {
