@@ -5,7 +5,9 @@ export default function CreateRoom(props) {
   const socket = props.socket;
   const setCurrentRace = props.setCurrentRace;
   const [roomId, setRoomId] = useState("");
-  const [raceValue, setRaceValue] = useState("15");
+
+  const raceValue = props.raceValue;
+  const setRaceValue = props.setRaceValue;
  
   const setHost = props.setHost;
   const host = props.host;

@@ -7,6 +7,8 @@ export default function GameComponent(props) {
   const currentRace = props.currentRace;
   const setCurrentRace = props.setCurrentRace;
   const host = props.host;
+  const raceValue = props.raceValue;
+  const setRaceValue = props.setRaceValue;
 
   const [gameStatus, setGameStatusType] = useState("BEFORE_START");
   const [score, setScoreValue] = useState(0);
@@ -334,6 +336,8 @@ export default function GameComponent(props) {
             )}
           </div>
         )}
+      
+        {Number(currentRace) === Number(raceValue) && <div>Koniec gry, ilość wyścigów: {currentRace} / {raceValue}</div> }
       </div>
     </div>
   );

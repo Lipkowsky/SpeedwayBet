@@ -12,6 +12,7 @@ function App() {
   const [currentRoomUsersNumber, setCurrentRoomUsersNumber] = useState(0);
   const [currentRace, setCurrentRace] = useState(0);
   const [host, setHost] = useState(false);
+  const [raceValue, setRaceValue] = useState("15");
   useEffect(() => {
     socket.on("updateNumerOfUsers", (data) => {
       setCurrentRoomUsersNumber(data.usersNumber);
@@ -22,8 +23,6 @@ function App() {
     });
   }, [socket]);
 
- 
-
   return (
     <div className="App">
       {!currentRoomId && (
@@ -32,6 +31,8 @@ function App() {
           host={host}
           setCurrentRace={setCurrentRace}
           socket={socket}
+          raceValue={raceValue}
+          setRaceValue={setRaceValue}
         ></CreateRoom>
       )}
       {currentRoomId && (
@@ -42,6 +43,8 @@ function App() {
           currentRoomId={currentRoomId}
           currentRace={currentRace}
           setCurrentRace={setCurrentRace}
+          raceValue={raceValue}
+          setRaceValue={setRaceValue}
         ></GameComponent>
       )}
     </div>
