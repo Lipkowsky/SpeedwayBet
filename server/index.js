@@ -21,21 +21,42 @@ const serverList = new Schema({
   roomId: String,
   raceValue: String,
   gameStatus: String,
-  phase: String,
   players: Array,
   currentRace: String,
+  results: Object,
+  raceLimit: Number,
 });
 const ServerList = mongoose.model("ServerList", serverList);
 
 io.on("connection", async (socket) => {
+  socket.on("create_room", async (data) => {
+    console.log(data);
+    const serverStarter = new ServerList({
+      roomId: data.roomId,
+      raceLimit: parseInt(data.raceLimit),
+      players: {
+        id: socket.id,
+        selectedOptions: false,
+        host: true,
+        score: 0,
+        
+      },
+    });
+    serverStarter.save();
+    socket.emit("SET_HOST", {
+      roomId: data.roomId,
+      hostId: socket.id,
+    });
+  });
+
   socket.on("join_room", async (data) => {
-    console.log(`User Connected: ${socket.id}`);
     socket.join(data.roomId);
 
     try {
       const tryFindServer = await ServerList.findOne({
         roomId: data.roomId,
       });
+
       if (tryFindServer === null) {
         const doc = new ServerList({ roomId: data.roomId });
         doc.save();
@@ -75,7 +96,6 @@ io.on("connection", async (socket) => {
       },
       {
         gameStatus: "STARTED",
-        phase: "1",
         currentRace: 1,
       },
       { new: true }
@@ -84,23 +104,6 @@ io.on("connection", async (socket) => {
     const users = [...io.sockets.adapter.rooms.get(data.roomId)];
 
     for (let [index, user] of users.entries()) {
-      if (index === 0) {
-        const updateServerStatus = await ServerList.findOneAndUpdate(
-          {
-            roomId: data.roomId,
-          },
-          {
-            $push: {
-              players: {
-                id: user,
-                selectedOptions: false,
-                host: true,
-              },
-            },
-          },
-          { new: true }
-        );
-      }
       if (index !== 0) {
         const updateServerStatus = await ServerList.findOneAndUpdate(
           {
@@ -112,6 +115,7 @@ io.on("connection", async (socket) => {
                 id: user,
                 selectedOptions: false,
                 host: false,
+                score: 0,
               },
             },
           },
@@ -157,8 +161,8 @@ io.on("connection", async (socket) => {
 
   socket.on("saveHostRaceResult", async (data) => {
     const results = data.currentResults;
-    console.log(results);
-    const server = await ServerList.findOne({
+
+    let server = await ServerList.findOne({
       roomId: data.roomId,
     });
 
@@ -167,18 +171,76 @@ io.on("connection", async (socket) => {
     io.in(data.roomId).emit("UPDATE_RESULTS", {
       gameStatus: "RESULTS_DONE",
       results: results,
-      currentRace: currentRace
+      currentRace: currentRace,
     });
-   
+
     await ServerList.findOneAndUpdate(
       {
         roomId: data.roomId,
       },
       {
         currentRace: currentRace,
+        results: results,
       },
       { new: true }
     );
+
+    server = await ServerList.findOne({
+      roomId: data.roomId,
+    });
+
+    /// PORÓWNANIE WYNIKÓW GRACZY
+    for (let player of server.players) {
+      if (
+        player.options.selectedOptionRed ===
+        server.results.selectedOptionRedResult
+      ) {
+        player.score += 1;
+      }
+      if (
+        player.options.selectedOptionBlue ===
+        server.results.selectedOptionBlueResult
+      ) {
+        player.score += 1;
+      }
+      if (
+        player.options.selectedOptionWhite ===
+        server.results.selectedOptionWhiteResult
+      ) {
+        player.score += 1;
+      }
+      if (
+        player.options.selectedOptionYellow ===
+        server.results.selectedOptionYellowResult
+      ) {
+        player.score += 1;
+      }
+      await ServerList.updateOne(
+        { roomId: data.roomId, "players.id": player.id },
+        {
+          $set: {
+            "players.$.selectedOptions": false,
+            "players.$.score": player.score,
+          },
+        }
+      );
+      // WYSYŁANIE WYNIKÓW DO HOSTA ORAZ INNYCH UŻYTKOWNIKÓW
+      if (player.id === socket.id) {
+        socket.emit("update_score_user", {
+          score: player.score,
+        });
+      } else {
+        socket.broadcast.to(player.id).emit("update_score_user", {
+          score: player.score,
+        });
+      }
+    }
+  });
+
+  socket.on("nextRaceEvent", async (data) => {
+    io.in(data.roomId).emit("set_game_status", {
+      gameStatus: "STARTED",
+    });
   });
 });
 
