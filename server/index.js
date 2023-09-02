@@ -76,6 +76,7 @@ io.on("connection", async (socket) => {
       {
         gameStatus: "STARTED",
         phase: "1",
+        currentRace: 1,
       },
       { new: true }
     );
@@ -127,7 +128,8 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("save_race", async (data) => {
-    const update = await ServerList.updateOne(
+    // ZAPISZ WYBORY UŻYTKOWNIKA
+    await ServerList.updateOne(
       { roomId: data.roomId, "players.id": socket.id },
       {
         $set: {
@@ -137,6 +139,7 @@ io.on("connection", async (socket) => {
       }
     );
 
+    // WYŚLIJ DO NIEGO KOMUNIKAT O OCZEKIWANIU NA WYBÓR INNYCH
     socket.emit("set_game_status", {
       gameStatus: "LOADING",
     });
@@ -144,33 +147,38 @@ io.on("connection", async (socket) => {
     const server = await ServerList.findOne({
       roomId: data.roomId,
     });
-    const players = server.players;
-
-    // let isAllPlayerReady = false;
-    // for (let player of players) {
-    //   isAllPlayerReady = player.selectedOptions;
-    // }
-
-    // SPRAWDZENIE CZY WSZYSCY GRACZE DALI ODPOWIEDŹ
-    let isAllPlayerReady = players.every((e) => e.selectedOptions);
-    console.log("isAllPlayerReady", isAllPlayerReady);
-    if (isAllPlayerReady) {
-
-      for (let player of players) {
-        if (player.host) {
-          console.log(player.id)
-          socket.broadcast.to(player.id).emit("set_game_status", {
-            gameStatus: "TYPE_RESULTS",
-          });
-        } 
-        if (!player.host) {
-          console.log(player.id)
-          io.in(data.roomId).to(player.id).emit("set_game_status", {
-            gameStatus: "WAIT_FOR_RESULTS",
-          });
-        }
-      }
+    // JEŚLI WSZYSCY ZAZNACZYLI ODPOWIEDŹ TO PRZEJDZ DO PODAWANIA WYNIKÓW
+    if (server.players.every((e) => e.selectedOptions)) {
+      io.in(data.roomId).emit("set_game_status", {
+        gameStatus: "WAIT_FOR_RESULTS",
+      });
     }
+  });
+
+  socket.on("saveHostRaceResult", async (data) => {
+    const results = data.currentResults;
+    console.log(results);
+    const server = await ServerList.findOne({
+      roomId: data.roomId,
+    });
+
+    const currentRace = parseInt(server.currentRace) + 1;
+
+    io.in(data.roomId).emit("UPDATE_RESULTS", {
+      gameStatus: "RESULTS_DONE",
+      results: results,
+      currentRace: currentRace
+    });
+   
+    await ServerList.findOneAndUpdate(
+      {
+        roomId: data.roomId,
+      },
+      {
+        currentRace: currentRace,
+      },
+      { new: true }
+    );
   });
 });
 

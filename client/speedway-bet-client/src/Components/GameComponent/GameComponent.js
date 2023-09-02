@@ -6,9 +6,9 @@ export default function GameComponent(props) {
   const currentRoomUsersNumber = props.currentRoomUsersNumber;
   const [raceValue, setRaceValue] = useState("15");
   const [gameStatus, setGameStatusType] = useState("BEFORE_START");
-
+  const [gameHost, setGameHost] = useState(false);
   const [selectedOptionRed, setSelectedOptionRed] = useState("1"); // Tworzymy stan do śledzenia wyboru
-
+  const [currentRace,setCurrentRace] = useState(0)
   // Funkcja obsługująca zmianę wyboru
   const handleSelectChangeRed = (event) => {
     setSelectedOptionRed(event.target.value);
@@ -35,6 +35,45 @@ export default function GameComponent(props) {
     setSelectedOptionYellow(event.target.value);
   };
 
+  ///// ################
+
+  const [selectedOptionRedResult, setSelectedOptionRedResult] = useState("1"); // Tworzymy stan do śledzenia wyboru
+
+  // Funkcja obsługująca zmianę wyboru
+  const handleSelectChangeRedResult = (event) => {
+    setSelectedOptionRedResult(event.target.value);
+  };
+
+  const [selectedOptionBlueResult, setSelectedOptionBlueResult] = useState("1"); // Tworzymy stan do śledzenia wyboru
+
+  // Funkcja obsługująca zmianę wyboru
+  const handleSelectChangeBlueResult = (event) => {
+    setSelectedOptionBlueResult(event.target.value);
+  };
+
+  const [selectedOptionWhiteResult, setSelectedOptionWhiteResult] =
+    useState("1"); // Tworzymy stan do śledzenia wyboru
+
+  // Funkcja obsługująca zmianę wyboru
+  const handleSelectChangeWhiteResult = (event) => {
+    setSelectedOptionWhiteResult(event.target.value);
+  };
+
+  const [selectedOptionYellowResult, setSelectedOptionYellowResult] =
+    useState("1"); // Tworzymy stan do śledzenia wyboru
+
+  // Funkcja obsługująca zmianę wyboru
+  const handleSelectChangeYellowResult = (event) => {
+    setSelectedOptionYellowResult(event.target.value);
+  };
+
+  const [raceResults, setRaceResults] = useState({
+    selectedOptionRedResult: 0,
+    selectedOptionBlueResult: 0,
+    selectedOptionWhiteResult: 0,
+    selectedOptionYellowResult: 0,
+  });
+
   const handleChange = (e) => {
     setRaceValue(e.target.value);
   };
@@ -51,6 +90,7 @@ export default function GameComponent(props) {
   const startGame = () => {
     socket.emit("start_game", {
       roomId: currentRoomId,
+      
     });
   };
 
@@ -66,23 +106,47 @@ export default function GameComponent(props) {
     });
   };
 
+  const saveHostRaceResult = () => {
+    socket.emit("saveHostRaceResult", {
+      roomId: currentRoomId,
+      currentResults: {
+        selectedOptionRedResult: selectedOptionRedResult,
+        selectedOptionBlueResult: selectedOptionBlueResult,
+        selectedOptionWhiteResult: selectedOptionWhiteResult,
+        selectedOptionYellowResult: selectedOptionYellowResult,
+      },
+    });
+  };
+
   useEffect(() => {
     socket.on(currentRoomId, (data) => {
+      const currentPlayer = data.players.find((e) => e.id === socket.id);
+      if (currentPlayer.host) {
+        setGameHost(true);
+      }
       setGameStatusType(data.gameStatus);
+      setCurrentRace(data.currentRace)
     });
   }, [socket]);
 
   useEffect(() => {
     socket.on("set_game_status", (data) => {
-      console.log(data.gameStatus)
       setGameStatusType(data.gameStatus);
+ 
     });
   }, [socket]);
 
-  
+  useEffect(() => {
+    socket.on("UPDATE_RESULTS", (data) => {
+      setGameStatusType(data.gameStatus);
+      setRaceResults(data.results);
+      setCurrentRace(data.currentRace)
+    });
+  }, [socket]);
 
   return (
     <div>
+      <div>Aktualny wyścig{currentRace}</div>
       {gameStatus === "BEFORE_START" && (
         <div>
           <header className="border-b border-gray-300 py-4 px-4">
@@ -156,12 +220,14 @@ export default function GameComponent(props) {
           >
             Zapisz
           </button>
-          <button
-            onClick={startGame}
-            className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded mt-4"
-          >
-            Start gry
-          </button>
+          {
+            <button
+              onClick={startGame}
+              className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded mt-4"
+            >
+              Start gry
+            </button>
+          }
         </div>
       )}
       <div>
@@ -216,20 +282,78 @@ export default function GameComponent(props) {
 
         {gameStatus === "LOADING" && (
           <div>
-            <h1>{gameStatus}</h1>
             <p>Trwa wybieranie....</p>
           </div>
         )}
-        {gameStatus === "TYPE_RESULTS" && (
+        {gameStatus === "WAIT_FOR_RESULTS" && gameHost && (
           <div>
             <h1>{gameStatus}</h1>
             <p>Wpisz aktualne wyniki</p>
+            <div>
+     
+              <span className="mr-4">Kask czerwony:</span>
+              <select
+                value={selectedOptionRedResult}
+                onChange={handleSelectChangeRedResult}
+              >
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+              </select>
+              <span className="mr-4">Kask niebieski:</span>
+              <select
+                value={selectedOptionBlueResult}
+                onChange={handleSelectChangeBlueResult}
+              >
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+              </select>
+              <span className="mr-4">Kask biały:</span>
+              <select
+                value={selectedOptionWhiteResult}
+                onChange={handleSelectChangeWhiteResult}
+              >
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+              </select>
+              <span className="mr-4">Kask żółty:</span>
+              <select
+                value={selectedOptionYellowResult}
+                onChange={handleSelectChangeYellowResult}
+              >
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+              </select>
+              <button
+                onClick={saveHostRaceResult}
+                className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded mt-4"
+              >
+                Zapisz stan
+              </button>
+            </div>
           </div>
         )}
-        {gameStatus === "WAIT_FOR_RESULTS" && (
+        {gameStatus === "WAIT_FOR_RESULTS" && !gameHost &&  (
           <div>
             <h1>{gameStatus}</h1>
             <p>Poczekaj na podanie wyników</p>
+          </div>
+        )}
+        {gameStatus === "RESULTS_DONE" && (
+          <div>
+            <h1>{gameStatus}</h1>
+            <p>Aktualne wyniki biegu:</p>
+            <div>Czerwony: {raceResults.selectedOptionRedResult}</div>
+            <div>Niebieski: {raceResults.selectedOptionBlueResult}</div>
+            <div>Biały: {raceResults.selectedOptionWhiteResult}</div>
+            <div>Żółty: {raceResults.selectedOptionYellowResult}</div>
           </div>
         )}
       </div>
