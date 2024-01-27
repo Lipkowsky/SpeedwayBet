@@ -29,7 +29,7 @@ function App() {
   }, [socket]);
 
   return (
-    <div className="App">
+    <div>
       {cannotJoin && <div>GRA JUZ SIĘ ROZPOCZETA NIE MOZNA DOLACZYC</div>}
       {!currentRoomId && !cannotJoin && (
         <CreateRoom

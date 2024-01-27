@@ -55,16 +55,21 @@ export default function SelectBetComponent(props) {
     });
   };
 
+
+
   return (
     <div>
       <main className="flex min-h-screen flex-col items-center space-y-4">
         <div>
           <h3 className="italic font-bold">Komunikat:</h3>
-          <p className="">Wybierz kolejność w jakiej zawodnicy dojadą na metę.</p>
+          <p className="">
+            Wybierz kolejność w jakiej zawodnicy dojadą na metę.
+          </p>
         </div>
         {helmets.map((person, index) => (
           <div
-            className={`font-bold tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-40 ${person.boxShadow} ${person.textColor} ${person.bg}`}
+            id="draggableElement"
+            className={`draggable font-bold tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-40 ${person.boxShadow} ${person.textColor} ${person.bg}`}
             draggable
             onDragStart={() => (dragPerson.current = index)}
             onDragEnter={() => (draggedOverPerson.current = index)}

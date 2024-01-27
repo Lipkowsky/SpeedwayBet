@@ -27,7 +27,6 @@ export default function GameComponent(props) {
     selectedOptionYellowResult: 0,
   });
 
-
   useEffect(() => {
     socket.on(currentRoomId, (data) => {
       setGameStatusType(data.gameStatus);
@@ -62,10 +61,10 @@ export default function GameComponent(props) {
   }, [currentRace]);
 
   return (
-    <div>
-       <header className="border-b border-gray-300 py-4 px-4">
-        <div className="container mx-auto flex items-center justify-between relative">
-          <div className="flex">
+    <div class="h-screen flex">
+      <div className="w-1/4 flex flex-row bg-white">
+        <div class="flex flex-col space-y-8">
+          <div class="bg-white p-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -79,7 +78,7 @@ export default function GameComponent(props) {
             <span className="font-medium cursor-pointer">{currentRoomId}</span>
           </div>
 
-          <div className="flex">
+          <div class="bg-white p-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -94,58 +93,61 @@ export default function GameComponent(props) {
               {currentRoomUsersNumber} użytkowników
             </span>
           </div>
+
+          <div class="bg-white p-4 font-medium">Bieg: {currentRace}</div>
+
+          <div class="bg-white p-4 font-medium">Twoje punkty: {score}</div>
         </div>
-      </header>
-      <div className="rounded-xl shadow-xl border-b border-gray- flex divide-x bg-white mx-auto">
-      <div className="flex-1 font-medium">Bieg: {currentRace}</div>
-      <div className="flex-1 font-medium">Twoje punkty: {score}</div>
       </div>
-    
-      {gameStatus === "BEFORE_START" && host && (
-        <BeforeGameComponent
-          socket={socket}
-          currentRoomId={currentRoomId}
-          currentRoomUsersNumber={currentRoomUsersNumber}
-          host={host}
-        ></BeforeGameComponent>
-      )}
-      {gameStatus === "BEFORE_START" && <WaitForHostComponent />}
-      <div className="bg-slate-100">
-        {gameStatus === "STARTED" && (
-          <SelectBetComponent
-            socket={socket}
-            gameStatus={gameStatus}
-            currentRoomId={currentRoomId}
-          />
-        )}
 
-        {gameStatus === "LOADING" && <LoadingGameComponent />}
-        {gameStatus === "WAIT_FOR_RESULTS" && host && (
-          <SelectGameRaceComponent
+      <div className="w-3/4">
+        {gameStatus === "BEFORE_START" && host && (
+          <BeforeGameComponent
             socket={socket}
-            gameStatus={gameStatus}
             currentRoomId={currentRoomId}
-          />
-        )}
-        {gameStatus === "WAIT_FOR_RESULTS" && !host && (
-          <div>
-            <LoadingGameComponent />
-          </div>
-        )}
-        {gameStatus === "RESULTS_DONE" && (
-          <DisplayResultGameComponent
-            socket={socket}
+            currentRoomUsersNumber={currentRoomUsersNumber}
             host={host}
-            currentRoomId={currentRoomId}
-            raceResults={raceResults}
-          />
+          ></BeforeGameComponent>
         )}
+        {gameStatus === "BEFORE_START" && <WaitForHostComponent />}
+        <div>
+          {gameStatus === "STARTED" && (
+            <SelectBetComponent
+              socket={socket}
+              gameStatus={gameStatus}
+              currentRoomId={currentRoomId}
+            />
+          )}
 
-        {endGame && (
-          <div>
-            Koniec gry, ilość wyścigów: {currentRace} / {raceValue}
-          </div>
-        )}
+          {gameStatus === "LOADING" && <LoadingGameComponent />}
+          {gameStatus === "WAIT_FOR_RESULTS" && host && (
+            <SelectGameRaceComponent
+              socket={socket}
+              gameStatus={gameStatus}
+              currentRoomId={currentRoomId}
+            />
+          )}
+          {gameStatus === "WAIT_FOR_RESULTS" && !host && (
+            <div>
+              <LoadingGameComponent />
+            </div>
+          )}
+          {gameStatus === "RESULTS_DONE" && (
+            <DisplayResultGameComponent
+              socket={socket}
+              host={host}
+              currentRoomId={currentRoomId}
+              raceResults={raceResults}
+            />
+          )}
+
+          {endGame && (
+            <div>
+              Koniec gry, ilość wyścigów: {currentRace} / {raceValue}
+            </div>
+          )}
+        </div>
+        <div class="absolute top-0 bottom-0 left-1/4 bg-gray-400 w-px"></div>
       </div>
     </div>
   );
