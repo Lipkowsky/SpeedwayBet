@@ -1,0 +1,12 @@
+.list-container {
+    display: flex;
+    font-size: 18px;
+    background-color: black;
+    flex-direction: column;
+  }
+  .item-container {
+    background-color: black;
+    border: 1px solid black;
+    padding: 25px 70px;
+    margin: 15px 50px;
+  }

@@ -13,6 +13,7 @@ function App() {
   const [currentRace, setCurrentRace] = useState(0);
   const [host, setHost] = useState(false);
   const [raceValue, setRaceValue] = useState("15");
+  const [cannotJoin, setCannotJoin] = useState(false);
   useEffect(() => {
     socket.on("updateNumerOfUsers", (data) => {
       setCurrentRoomUsersNumber(data.usersNumber);
@@ -21,11 +22,16 @@ function App() {
       setCurrentRoomId(data.roomId);
       setCurrentRoomUsersNumber(data.usersNumber);
     });
+
+    socket.on("cannot_join", (data) => {
+      setCannotJoin(true);
+    });
   }, [socket]);
 
   return (
     <div className="App">
-      {!currentRoomId && (
+      {cannotJoin && <div>GRA JUZ SIĘ ROZPOCZETA NIE MOZNA DOLACZYC</div>}
+      {!currentRoomId && !cannotJoin && (
         <CreateRoom
           setHost={setHost}
           host={host}
@@ -35,7 +41,7 @@ function App() {
           setRaceValue={setRaceValue}
         ></CreateRoom>
       )}
-      {currentRoomId && (
+      {currentRoomId && !cannotJoin && (
         <GameComponent
           host={host}
           socket={socket}
@@ -45,6 +51,7 @@ function App() {
           setCurrentRace={setCurrentRace}
           raceValue={raceValue}
           setRaceValue={setRaceValue}
+          cannotJoin={cannotJoin}
         ></GameComponent>
       )}
     </div>

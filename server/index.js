@@ -30,7 +30,6 @@ const ServerList = mongoose.model("ServerList", serverList);
 
 io.on("connection", async (socket) => {
   socket.on("create_room", async (data) => {
-    console.log(data);
     const serverStarter = new ServerList({
       roomId: data.roomId,
       raceLimit: parseInt(data.raceLimit),
@@ -39,7 +38,6 @@ io.on("connection", async (socket) => {
         selectedOptions: false,
         host: true,
         score: 0,
-        
       },
     });
     serverStarter.save();
@@ -50,8 +48,6 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("join_room", async (data) => {
-    socket.join(data.roomId);
-
     try {
       const tryFindServer = await ServerList.findOne({
         roomId: data.roomId,
@@ -61,9 +57,17 @@ io.on("connection", async (socket) => {
         const doc = new ServerList({ roomId: data.roomId });
         doc.save();
       }
+      if(tryFindServer.currentRace >= 1){
+        console.log("NIE MOZNA DOLACZYC GRA ROZPOCZETA")
+        socket.emit("cannot_join", {
+          message: "GAME JUST STARTED, YOU CANNOT JOIN TO ROOM",
+        })
+        return; 
+      }
     } catch (error) {
       console.log(error);
     }
+    socket.join(data.roomId);
 
     const users = io.sockets.adapter.rooms.get(data.roomId);
 
@@ -138,7 +142,7 @@ io.on("connection", async (socket) => {
       {
         $set: {
           "players.$.selectedOptions": true,
-          "players.$.options": data.choices,
+          "players.$.helmets": data.helmets,
         },
       }
     );
@@ -158,6 +162,18 @@ io.on("connection", async (socket) => {
       });
     }
   });
+
+  function isOnTheSamePosition(array1, array2, element) {
+    const index1 = array1.findIndex((item) => item.id === element.id);
+
+    const index2 = array2.findIndex((item) => item.id === element.id);
+
+    if (index1 === -1 || index2 === -1) {
+      return false;
+    }
+
+    return index1 === index2;
+  }
 
   socket.on("saveHostRaceResult", async (data) => {
     const results = data.currentResults;
@@ -191,30 +207,21 @@ io.on("connection", async (socket) => {
 
     /// PORÓWNANIE WYNIKÓW GRACZY
     for (let player of server.players) {
-      if (
-        player.options.selectedOptionRed ===
-        server.results.selectedOptionRedResult
-      ) {
-        player.score += 1;
-      }
-      if (
-        player.options.selectedOptionBlue ===
-        server.results.selectedOptionBlueResult
-      ) {
-        player.score += 1;
-      }
-      if (
-        player.options.selectedOptionWhite ===
-        server.results.selectedOptionWhiteResult
-      ) {
-        player.score += 1;
-      }
-      if (
-        player.options.selectedOptionYellow ===
-        server.results.selectedOptionYellowResult
-      ) {
-        player.score += 1;
-      }
+      const helmetsArray = [
+        { id: 1, name: "Czerwony" },
+        { id: 2, name: "Niebieski" },
+        { id: 3, name: "Biały" },
+        { id: 4, name: "Żółty" },
+      ];
+      let playerResult = [];
+      helmetsArray.forEach((element) => {
+        const result = isOnTheSamePosition(player.helmets, results, element);
+        playerResult.push(result);
+      });
+      // PODLICZANIE POPRAWNYCH ODPOWIEDZI GRACZA
+      const playerScore = playerResult.filter(Boolean).length;
+      player.score += playerScore;
+      playerResult = [];
       await ServerList.updateOne(
         { roomId: data.roomId, "players.id": player.id },
         {

@@ -1,96 +1,51 @@
-import {React, useState} from "react";
+import { React, useRef, useState } from "react";
 
 export default function SelectGameRaceComponent(props) {
   const socket = props.socket;
   const gameStatus = props.gameStatus;
   const currentRoomId = props.currentRoomId;
 
-  const [selectedOptionRedResult, setSelectedOptionRedResult] = useState("1"); // Tworzymy stan do śledzenia wyboru
+  const dragPerson = useRef(0);
+  const draggedOverPerson = useRef(0);
 
-  // Funkcja obsługująca zmianę wyboru
-  const handleSelectChangeRedResult = (event) => {
-    setSelectedOptionRedResult(event.target.value);
-  };
+  const [helmets, setHelmets] = useState([
+    { id: 1, name: "Czerwony" },
+    { id: 2, name: "Niebieski" },
+    { id: 3, name: "Biały" },
+    { id: 4, name: "Żółty" },
+  ]);
 
-  const [selectedOptionBlueResult, setSelectedOptionBlueResult] = useState("1"); // Tworzymy stan do śledzenia wyboru
-
-  // Funkcja obsługująca zmianę wyboru
-  const handleSelectChangeBlueResult = (event) => {
-    setSelectedOptionBlueResult(event.target.value);
-  };
-
-  const [selectedOptionWhiteResult, setSelectedOptionWhiteResult] =
-    useState("1"); // Tworzymy stan do śledzenia wyboru
-
-  // Funkcja obsługująca zmianę wyboru
-  const handleSelectChangeWhiteResult = (event) => {
-    setSelectedOptionWhiteResult(event.target.value);
-  };
-
-  const [selectedOptionYellowResult, setSelectedOptionYellowResult] =
-    useState("1"); // Tworzymy stan do śledzenia wyboru
-
-  // Funkcja obsługująca zmianę wyboru
-  const handleSelectChangeYellowResult = (event) => {
-    setSelectedOptionYellowResult(event.target.value);
-  };
+  function handleSort() {
+    const helmetsClone = [...helmets];
+    const temp = helmetsClone[dragPerson.current];
+    helmetsClone[dragPerson.current] = helmetsClone[draggedOverPerson.current];
+    helmetsClone[draggedOverPerson.current] = temp;
+    setHelmets(helmetsClone);
+  }
 
   const saveHostRaceResult = () => {
     socket.emit("saveHostRaceResult", {
       roomId: currentRoomId,
-      currentResults: {
-        selectedOptionRedResult: selectedOptionRedResult,
-        selectedOptionBlueResult: selectedOptionBlueResult,
-        selectedOptionWhiteResult: selectedOptionWhiteResult,
-        selectedOptionYellowResult: selectedOptionYellowResult,
-      },
+      currentResults: helmets,
     });
   };
   return (
     <div>
-      <h1>{gameStatus}</h1>
-      <p>Wpisz aktualne wyniki</p>
-      <div>
-        <span className="mr-4">Kask czerwony:</span>
-        <select
-          value={selectedOptionRedResult}
-          onChange={handleSelectChangeRedResult}
-        >
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-        </select>
-        <span className="mr-4">Kask niebieski:</span>
-        <select
-          value={selectedOptionBlueResult}
-          onChange={handleSelectChangeBlueResult}
-        >
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-        </select>
-        <span className="mr-4">Kask biały:</span>
-        <select
-          value={selectedOptionWhiteResult}
-          onChange={handleSelectChangeWhiteResult}
-        >
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-        </select>
-        <span className="mr-4">Kask żółty:</span>
-        <select
-          value={selectedOptionYellowResult}
-          onChange={handleSelectChangeYellowResult}
-        >
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-        </select>
+      <main className="flex min-h-screen flex-col items-center space-y-4">
+        <h1 className="text-xl font-bold mt-4">HOST: PODAJ WYNIKI OSTATNIEGO WYŚCIGU</h1>
+        {helmets.map((person, index) => (
+          <div
+            className="relative flex space-x-3 border rounded p-2 bg-gray-100"
+            draggable
+            onDragStart={() => (dragPerson.current = index)}
+            onDragEnter={() => (draggedOverPerson.current = index)}
+            onDragEnd={handleSort}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <p>{person.name}</p>
+          </div>
+        ))}
+        <div>
         <button
           onClick={saveHostRaceResult}
           className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded mt-4"
@@ -98,6 +53,8 @@ export default function SelectGameRaceComponent(props) {
           Zapisz stan
         </button>
       </div>
+      </main>
+      
     </div>
   );
 }
