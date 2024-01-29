@@ -13,7 +13,7 @@ export default function BeforeGameComponent(props) {
   };
 
   return (
-    <div class="bg-gray-100 w-full border border-gray-200 p-4">
+    <div>
       {host && (
         <button
           onClick={startGame}

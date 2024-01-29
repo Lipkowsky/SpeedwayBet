@@ -6,7 +6,6 @@ export default function SelectGameRaceComponent(props) {
   const gameStatus = props.gameStatus;
   const currentRoomId = props.currentRoomId;
 
-
   const [helmets, setHelmets] = useState([
     {
       id: 1,
@@ -47,7 +46,6 @@ export default function SelectGameRaceComponent(props) {
   // }
 
   const saveHostRaceResult = () => {
-    
     socket.emit("saveHostRaceResult", {
       roomId: currentRoomId,
       currentResults: helmets,
@@ -55,19 +53,23 @@ export default function SelectGameRaceComponent(props) {
   };
   return (
     <div>
-      <main className="flex min-h-screen flex-col items-center space-y-4">
-        <h1 className="text-xl font-bold mt-4">HOST: PODAJ WYNIKI OSTATNIEGO WYŚCIGU</h1>
-        <DraggableList items={helmets} setHelmets={setHelmets}/>
+      <main className="flex h-fit flex-col items-center justify-center space-y-4">
         <div>
-        <button
-          onClick={saveHostRaceResult}
-          className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded mt-4"
-        >
-          Zapisz stan
-        </button>
-      </div>
+          <h3 className="italic font-bold">Komunikat:</h3>
+          <p>Podaj wynik ostatniego wyścigu</p>
+
+          <DraggableList items={helmets} setHelmets={setHelmets} />
+        </div>
+
+        <div>
+          <button
+            onClick={saveHostRaceResult}
+            className="bg-sky-950  w-full hover:bg-gray-400 text-white font-medium py-2 px-4 rounded inline-flex items-center mt-8"
+          >
+            Zapisz stan
+          </button>
+        </div>
       </main>
-      
     </div>
   );
 }

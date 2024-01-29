@@ -16,8 +16,13 @@ export default function DisplayResultGameComponent(props) {
 
   return (
     <div>
-      <main className="flex min-h-screen flex-col items-center space-y-4">
-        <h1 className="text-xl font-bold mt-4">Wyniki ostatniego wyścigu:</h1>
+      <main className="flex h-fit flex-col items-center justify-center space-y-4">
+      <div>
+          <h3 className="italic font-bold">Komunikat:</h3>
+          <p>
+            Wyniki wyścigu
+          </p>
+        </div>
         {helmets.map((helmet, index) => (
           <div
             className={`draggable font-bold tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-40 ${helmet.boxShadow} ${helmet.textColor} ${helmet.bg}`}
@@ -28,7 +33,7 @@ export default function DisplayResultGameComponent(props) {
         <div>
           {host && (
             <button
-              className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded mt-4"
+            className="bg-sky-950  w-full hover:bg-gray-400 text-white font-medium py-2 px-4 rounded inline-flex items-center mt-8"
               onClick={nextRaceEvent}
             >
               Przejdź do następnego wyścigu
