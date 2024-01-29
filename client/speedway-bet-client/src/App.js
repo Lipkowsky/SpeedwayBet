@@ -29,7 +29,7 @@ function App() {
   }, [socket]);
 
   return (
-    <div className="font-custom">
+    <div className="font-custom flex flex-col min-h-screen">
       <nav class="flex items-center justify-center flex-wrap bg-sky-700 p-6 mb-4">
         <div class="flex items-center flex-shrink-0 text-white mr-6">
           <svg
@@ -60,30 +60,39 @@ function App() {
           </span>
         </div>
       </nav>
-      {cannotJoin && <div>GRA JUZ SIĘ ROZPOCZETA NIE MOZNA DOLACZYC</div>}
-      {!currentRoomId && !cannotJoin && (
-        <CreateRoom
-          setHost={setHost}
-          host={host}
-          setCurrentRace={setCurrentRace}
-          socket={socket}
-          raceValue={raceValue}
-          setRaceValue={setRaceValue}
-        ></CreateRoom>
-      )}
-      {currentRoomId && !cannotJoin && (
-        <GameComponent
-          host={host}
-          socket={socket}
-          currentRoomUsersNumber={currentRoomUsersNumber}
-          currentRoomId={currentRoomId}
-          currentRace={currentRace}
-          setCurrentRace={setCurrentRace}
-          raceValue={raceValue}
-          setRaceValue={setRaceValue}
-          cannotJoin={cannotJoin}
-        ></GameComponent>
-      )}
+      <div className="flex-grow">
+        {cannotJoin && <div>GRA JUZ SIĘ ROZPOCZETA NIE MOZNA DOLACZYC</div>}
+        {!currentRoomId && !cannotJoin && (
+          <CreateRoom
+            setHost={setHost}
+            host={host}
+            setCurrentRace={setCurrentRace}
+            socket={socket}
+            raceValue={raceValue}
+            setRaceValue={setRaceValue}
+          ></CreateRoom>
+        )}
+        {currentRoomId && !cannotJoin && (
+          <GameComponent
+            host={host}
+            socket={socket}
+            currentRoomUsersNumber={currentRoomUsersNumber}
+            currentRoomId={currentRoomId}
+            currentRace={currentRace}
+            setCurrentRace={setCurrentRace}
+            raceValue={raceValue}
+            setRaceValue={setRaceValue}
+            cannotJoin={cannotJoin}
+          ></GameComponent>
+        )}
+      </div>
+
+      <footer className="bg-sky-700 text-center text-white py-5 bottom-0 w-full">
+        <div className="container mx-auto">
+          {/* Footer content goes here */}
+          <p>&copy; Piotr Lipkowski 2024</p>
+        </div>
+      </footer>
     </div>
   );
 }

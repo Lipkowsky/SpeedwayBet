@@ -65,9 +65,9 @@ export default function GameComponent(props) {
 
   return (
     <div class="h-screen flex">
-      <div className="w-2/4 flex  justify-center flex-row bg-white">
-        <div class="flex flex-col space-y-8">
-          <div class="bg-white flex p-2">
+      <div className="w-2/4 bg-gray-100 h-fit min-h-auto border border-gray-100 p-4 mr-1">
+        <div class="flex flex-col space-y-2">
+        <div class="bg-gray-200 rounded flex p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -83,7 +83,7 @@ export default function GameComponent(props) {
             </div>
           </div>
 
-          <div class="bg-white flex p-2">
+          <div class="bg-gray-200 rounded flex p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -101,7 +101,7 @@ export default function GameComponent(props) {
             </div>
           </div>
 
-          <div class="bg-white flex p-2">
+          <div class="bg-gray-200 rounded flex p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -122,7 +122,7 @@ export default function GameComponent(props) {
             </div>
           </div>
 
-          <div class="bg-white flex p-2">
+          <div class="bg-gray-200 rounded flex p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

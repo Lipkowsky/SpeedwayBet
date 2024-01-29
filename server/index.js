@@ -54,7 +54,7 @@ io.on("connection", async (socket) => {
       });
 
       if (tryFindServer === null) {
-        const doc = new ServerList({ roomId: data.roomId });
+        const doc = new ServerList({ roomId: data.roomId, userName: data.userName });
         doc.save();
       }
       if(tryFindServer?.currentRace >= 1){
@@ -74,6 +74,7 @@ io.on("connection", async (socket) => {
       message: `You joined room: ${data.roomId}`,
       roomId: data.roomId,
       usersNumber: users.size,
+      
     });
     socket.to(data.roomId).emit("updateNumerOfUsers", {
       message: `Someone joined to: ${data.roomId}`,

@@ -25,9 +25,9 @@ export default function DisplayResultGameComponent(props) {
         </div>
         {helmets.map((helmet, index) => (
           <div
-            className={`draggable font-bold tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-40 ${helmet.boxShadow} ${helmet.textColor} ${helmet.bg}`}
+            className={`draggable font-medium tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-50 ${helmet.boxShadow} ${helmet.textColor} ${helmet.bg}`}
           >
-            <p>{helmet.name}</p>
+            <p className="flex">Pozycja: {index} {helmet.name}</p>
           </div>
         ))}
         <div>

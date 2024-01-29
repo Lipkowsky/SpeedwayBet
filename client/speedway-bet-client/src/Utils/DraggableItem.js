@@ -21,9 +21,9 @@ const DraggableItem = ({ id, name,bg, boxShadow,textColor, index, moveItem }) =>
   return (
     <li className="pt-5" ref={(node) => ref(drop(node))}>
       <div
-        className={`draggable font-bold tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-40 ${boxShadow} ${textColor} ${bg}`}
+        className={`draggable font-medium tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-50 ${boxShadow} ${textColor} ${bg}`}
       >
-        <p>{name}</p>
+        <p className="flex">Pozycja: {index+1} {name}</p>
       </div>
     </li>
   );

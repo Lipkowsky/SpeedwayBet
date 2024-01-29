@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import TextField from "../../Utils/TextField";
 
 export default function CreateRoom(props) {
   const socket = props.socket;
@@ -11,11 +12,17 @@ export default function CreateRoom(props) {
 
   const setHost = props.setHost;
   const host = props.host;
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState("");
   const handleSelectChange = (event) => {
     const value = event.target.value;
     setSelectedValue(value);
-    setRaceValue(value)
+    setRaceValue(value);
+  };
+
+  const [userName, setUserName] = useState("");
+
+  const handleChange = (e) => {
+    setUserName(e.target.value);
   };
 
   const generateRoom = () => {
@@ -25,9 +32,12 @@ export default function CreateRoom(props) {
     socket.emit("create_room", {
       roomId: uuid,
       raceLimit: raceValue,
+      userName: userName,
     });
 
+
     socket.emit("join_room", {
+      userName: userName,
       roomId: uuid,
     });
   };
@@ -36,6 +46,7 @@ export default function CreateRoom(props) {
     if (roomId !== "") {
       socket.emit("join_room", {
         roomId: roomId,
+        userName: userName
       });
     }
   };
@@ -49,6 +60,14 @@ export default function CreateRoom(props) {
   return (
     <div className="container mx-auto">
       <div class="bg-gray-100 w-full border border-gray-200 p-4">
+        <div className="container mx-auto p-4">
+          <TextField
+            label="Nazwa użytkownika"
+            placeholder="Podaj swoją nazwę użytkownika"
+            onChange={handleChange}
+            value={userName}
+          />
+        </div>
         {
           <button
             onClick={() => generateRoom()}
@@ -68,7 +87,9 @@ export default function CreateRoom(props) {
               onChange={handleSelectChange}
               className="w-1/4 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             >
-              <option>Wybierz ilość biegów</option>
+              <option value="default" disabled>
+                Wybierz ilość biegów
+              </option>
               <option value="15">15 biegów</option>
               <option value="23">23 biegi</option>
             </select>
