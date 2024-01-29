@@ -54,7 +54,7 @@ io.on("connection", async (socket) => {
       });
 
       if (tryFindServer === null) {
-        const doc = new ServerList({ roomId: data.roomId, userName: data.userName });
+        const doc = new ServerList({ roomId: data.roomId});
         doc.save();
       }
       if(tryFindServer?.currentRace >= 1){
