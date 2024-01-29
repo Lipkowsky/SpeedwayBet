@@ -57,8 +57,7 @@ io.on("connection", async (socket) => {
         const doc = new ServerList({ roomId: data.roomId });
         doc.save();
       }
-      if(tryFindServer.currentRace >= 1){
-        console.log("NIE MOZNA DOLACZYC GRA ROZPOCZETA")
+      if(tryFindServer?.currentRace >= 1){
         socket.emit("cannot_join", {
           message: "GAME JUST STARTED, YOU CANNOT JOIN TO ROOM",
         })

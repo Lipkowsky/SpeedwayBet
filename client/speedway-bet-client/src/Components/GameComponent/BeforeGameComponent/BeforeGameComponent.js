@@ -13,13 +13,11 @@ export default function BeforeGameComponent(props) {
   };
 
   return (
-    <div>
-    
-
+    <div class="bg-gray-100 w-full border border-gray-200 p-4">
       {host && (
         <button
           onClick={startGame}
-          className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded mt-4"
+          className="bg-gray-300  w-full hover:bg-gray-400 text-rose-800 font-semibold py-2 px-4 rounded inline-flex items-center mt-4"
         >
           Start gry
         </button>

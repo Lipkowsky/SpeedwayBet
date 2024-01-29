@@ -55,7 +55,10 @@ export default function GameComponent(props) {
   }, [socket]);
 
   useEffect(() => {
-    if (Number(currentRace) === Number(raceValue)) {
+    console.log(currentRace)
+    console.log(raceValue)
+    console.log(Number(currentRace) === Number(raceValue))
+    if (Number(currentRace) > Number(raceValue)) {
       setEndGame(true);
     }
   }, [currentRace]);
@@ -132,7 +135,7 @@ export default function GameComponent(props) {
               <LoadingGameComponent />
             </div>
           )}
-          {gameStatus === "RESULTS_DONE" && (
+          {gameStatus === "RESULTS_DONE" && !endGame &&  (
             <DisplayResultGameComponent
               socket={socket}
               host={host}
@@ -147,7 +150,7 @@ export default function GameComponent(props) {
             </div>
           )}
         </div>
-        <div class="absolute top-0 bottom-0 left-1/4 bg-gray-400 w-px"></div>
+        
       </div>
     </div>
   );
