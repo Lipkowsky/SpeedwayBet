@@ -1,12 +1,11 @@
 import { React, useRef, useState } from "react";
+import DraggableList from "../../../Utils/DraggableList";
+
 
 export default function SelectBetComponent(props) {
   const gameStatus = props.gameStatus;
   const socket = props.socket;
   const currentRoomId = props.currentRoomId;
-
-  const dragPerson = useRef(0);
-  const draggedOverPerson = useRef(0);
 
   const [helmets, setHelmets] = useState([
     {
@@ -39,15 +38,16 @@ export default function SelectBetComponent(props) {
     },
   ]);
 
-  function handleSort() {
-    const helmetsClone = [...helmets];
-    const temp = helmetsClone[dragPerson.current];
-    helmetsClone[dragPerson.current] = helmetsClone[draggedOverPerson.current];
-    helmetsClone[draggedOverPerson.current] = temp;
-    setHelmets(helmetsClone);
-  }
+  // function handleSort() {
+  //   const helmetsClone = [...helmets];
+  //   const temp = helmetsClone[dragPerson.current];
+  //   helmetsClone[dragPerson.current] = helmetsClone[draggedOverPerson.current];
+  //   helmetsClone[draggedOverPerson.current] = temp;
+  //   setHelmets(helmetsClone);
+  // }
 
   const saveRace = () => {
+    console.log("HELMENTS")
     console.log(helmets);
     socket.emit("save_race", {
       roomId: currentRoomId,
@@ -56,7 +56,7 @@ export default function SelectBetComponent(props) {
   };
 
 
-
+ 
   return (
     <div>
       <main className="flex min-h-screen flex-col items-center space-y-4">
@@ -65,8 +65,9 @@ export default function SelectBetComponent(props) {
           <p className="">
             Wybierz kolejność w jakiej zawodnicy dojadą na metę.
           </p>
+          <DraggableList items={helmets} setHelmets={setHelmets}/>
         </div>
-        {helmets.map((person, index) => (
+        {/* {helmets.map((person, index) => (
           <div
             id="draggableElement"
             className={`draggable font-bold tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-40 ${person.boxShadow} ${person.textColor} ${person.bg}`}
@@ -78,7 +79,7 @@ export default function SelectBetComponent(props) {
           >
             <p>{person.name}</p>
           </div>
-        ))}
+        ))} */}
         <div>
           <button
             onClick={saveRace}

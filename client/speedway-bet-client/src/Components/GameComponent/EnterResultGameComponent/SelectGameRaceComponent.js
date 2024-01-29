@@ -1,29 +1,53 @@
 import { React, useRef, useState } from "react";
+import DraggableList from "../../../Utils/DraggableList";
 
 export default function SelectGameRaceComponent(props) {
   const socket = props.socket;
   const gameStatus = props.gameStatus;
   const currentRoomId = props.currentRoomId;
 
-  const dragPerson = useRef(0);
-  const draggedOverPerson = useRef(0);
 
   const [helmets, setHelmets] = useState([
-    { id: 1, name: "Czerwony" },
-    { id: 2, name: "Niebieski" },
-    { id: 3, name: "Biały" },
-    { id: 4, name: "Żółty" },
+    {
+      id: 1,
+      name: "Czerwony",
+      bg: "bg-red-500",
+      textColor: "text-slate-100",
+      boxShadow: "shadow-red-400",
+    },
+    {
+      id: 2,
+      name: "Niebieski",
+      bg: "bg-blue-600",
+      textColor: "text-slate-100",
+      boxShadow: "shadow-blue-400",
+    },
+    {
+      id: 3,
+      name: "Biały",
+      bg: "bg-white",
+      textColor: "text-black-100",
+      boxShadow: "shadow-neutral-400",
+    },
+    {
+      id: 4,
+      name: "Żółty",
+      bg: "bg-yellow-300",
+      textColor: "text-black-100",
+      boxShadow: "shadow-yellow-400",
+    },
   ]);
 
-  function handleSort() {
-    const helmetsClone = [...helmets];
-    const temp = helmetsClone[dragPerson.current];
-    helmetsClone[dragPerson.current] = helmetsClone[draggedOverPerson.current];
-    helmetsClone[draggedOverPerson.current] = temp;
-    setHelmets(helmetsClone);
-  }
+  // function handleSort() {
+  //   const helmetsClone = [...helmets];
+  //   const temp = helmetsClone[dragPerson.current];
+  //   helmetsClone[dragPerson.current] = helmetsClone[draggedOverPerson.current];
+  //   helmetsClone[draggedOverPerson.current] = temp;
+  //   setHelmets(helmetsClone);
+  // }
 
   const saveHostRaceResult = () => {
+    
     socket.emit("saveHostRaceResult", {
       roomId: currentRoomId,
       currentResults: helmets,
@@ -33,18 +57,7 @@ export default function SelectGameRaceComponent(props) {
     <div>
       <main className="flex min-h-screen flex-col items-center space-y-4">
         <h1 className="text-xl font-bold mt-4">HOST: PODAJ WYNIKI OSTATNIEGO WYŚCIGU</h1>
-        {helmets.map((person, index) => (
-          <div
-            className="relative flex space-x-3 border rounded p-2 bg-gray-100"
-            draggable
-            onDragStart={() => (dragPerson.current = index)}
-            onDragEnter={() => (draggedOverPerson.current = index)}
-            onDragEnd={handleSort}
-            onDragOver={(e) => e.preventDefault()}
-          >
-            <p>{person.name}</p>
-          </div>
-        ))}
+        <DraggableList items={helmets} setHelmets={setHelmets}/>
         <div>
         <button
           onClick={saveHostRaceResult}

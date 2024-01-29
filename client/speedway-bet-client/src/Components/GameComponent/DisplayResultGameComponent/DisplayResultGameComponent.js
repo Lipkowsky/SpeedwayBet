@@ -6,7 +6,6 @@ export default function DisplayResultGameComponent(props) {
   const raceResults = props.raceResults;
   const currentRoomId = props.currentRoomId;
 
-
   const [helmets, setHelmets] = useState(raceResults);
 
   const nextRaceEvent = () => {
@@ -19,9 +18,11 @@ export default function DisplayResultGameComponent(props) {
     <div>
       <main className="flex min-h-screen flex-col items-center space-y-4">
         <h1 className="text-xl font-bold mt-4">Wyniki ostatniego wyścigu:</h1>
-        {helmets.map((person, index) => (
-          <div className="relative flex space-x-3 border rounded p-2 bg-gray-100">
-            <p>{person.name}</p>
+        {helmets.map((helmet, index) => (
+          <div
+            className={`draggable font-bold tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-40 ${helmet.boxShadow} ${helmet.textColor} ${helmet.bg}`}
+          >
+            <p>{helmet.name}</p>
           </div>
         ))}
         <div>
