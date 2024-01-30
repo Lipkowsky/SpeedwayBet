@@ -15,17 +15,13 @@ export default function GameComponent(props) {
   const host = props.host;
   const raceValue = props.raceValue;
   const cannotJoin = props.cannotJoin;
+  const userName = props.userName;
 
   const [gameStatus, setGameStatusType] = useState("BEFORE_START");
   const [score, setScoreValue] = useState(0);
   const [endGame, setEndGame] = useState(false);
 
-  const [raceResults, setRaceResults] = useState({
-    selectedOptionRedResult: 0,
-    selectedOptionBlueResult: 0,
-    selectedOptionWhiteResult: 0,
-    selectedOptionYellowResult: 0,
-  });
+  const [raceResults, setRaceResults] = useState(null);
 
   useEffect(() => {
     socket.on(currentRoomId, (data) => {
@@ -55,9 +51,6 @@ export default function GameComponent(props) {
   }, [socket]);
 
   useEffect(() => {
-    console.log(currentRace);
-    console.log(raceValue);
-    console.log(Number(currentRace) === Number(raceValue));
     if (Number(currentRace) > Number(raceValue)) {
       setEndGame(true);
     }
@@ -67,7 +60,28 @@ export default function GameComponent(props) {
     <div class="h-screen flex">
       <div className="w-2/4 bg-gray-100 h-fit min-h-auto border border-gray-100 p-4 mr-1">
         <div class="flex flex-col space-y-2">
-        <div class="bg-gray-200 rounded flex p-2">
+          <div class="bg-gray-200 rounded flex p-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-6 h-6 mr-2"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12 20a8 8 0 0 1-5-1.8v-.6c0-1.8 1.5-3.3 3.3-3.3h3.4c1.8 0 3.3 1.5 3.3 3.3v.6a8 8 0 0 1-5 1.8ZM2 12a10 10 0 1 1 10 10A10 10 0 0 1 2 12Zm10-5a3.3 3.3 0 0 0-3.3 3.3c0 1.7 1.5 3.2 3.3 3.2 1.8 0 3.3-1.5 3.3-3.3C15.3 8.6 13.8 7 12 7Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <div className="flex flex-col">
+              <span className="font-bold text-sm cursor-pointer">
+                Nazwa użytkownika:
+              </span>
+              <span className="font-medium">{userName}</span>
+            </div>
+          </div>
+          <div class="bg-gray-200 rounded flex p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -78,8 +92,8 @@ export default function GameComponent(props) {
               <path d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
             </svg>
             <div className="flex flex-col">
-              <span className="font-bold cursor-pointer">ID pokoju:</span>
-              <span className="font-medium">{currentRoomId}</span>
+              <span className="font-bold cursor-pointer text-sm">ID pokoju:</span>
+              <span className="font-medium text-sm">{currentRoomId}</span>
             </div>
           </div>
 
@@ -94,10 +108,10 @@ export default function GameComponent(props) {
               <path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
             </svg>
             <div className="flex flex-col">
-              <span className="font-bold cursor-pointer">
+              <span className="font-bold cursor-pointer text-sm">
                 Liczba użytkowników:
               </span>
-              <span className="font-medium"> {currentRoomUsersNumber}</span>
+              <span className="font-medium text-sm"> {currentRoomUsersNumber}</span>
             </div>
           </div>
 
@@ -117,8 +131,8 @@ export default function GameComponent(props) {
               />
             </svg>
             <div className="flex flex-col">
-              <span className="font-bold cursor-pointer">Bieg:</span>
-              <span className="font-medium"> {currentRace}</span>
+              <span className="font-bold cursor-pointer text-sm">Bieg:</span>
+              <span className="text-sm"> {currentRace}</span>
             </div>
           </div>
 
@@ -133,8 +147,8 @@ export default function GameComponent(props) {
               <path d="m17.829,7.762c-.141,0-.282-.045-.4-.133-.227-.17-.321-.464-.236-.734l.627-2.011-1.585-1.29c-.213-.181-.291-.476-.194-.738.096-.262.346-.437.626-.437h2.001l.708-1.987c.097-.261.346-.434.625-.434s.528.173.625.434l.708,1.987h2.001c.28,0,.53.175.626.438s.017.558-.197.739l-1.577,1.285.652,1.987c.089.269-.001.565-.226.738-.225.173-.534.185-.771.031l-1.836-1.196-1.805,1.208c-.112.075-.242.113-.371.113Zm-8,3c-.141,0-.282-.045-.4-.133-.227-.17-.321-.464-.236-.734l.627-2.011-1.585-1.29c-.213-.181-.291-.476-.194-.738.096-.262.346-.437.626-.437h2.001l.708-1.987c.097-.261.346-.434.625-.434s.528.173.625.434l.708,1.987h2.001c.28,0,.53.175.626.438s.017.558-.197.739l-1.577,1.285.652,1.987c.089.269-.001.565-.226.738-.225.173-.534.185-.771.031l-1.836-1.196-1.805,1.208c-.112.075-.242.113-.371.113ZM1.829,13.762c-.141,0-.282-.045-.4-.133-.227-.17-.321-.464-.236-.734l.627-2.011-1.585-1.29c-.213-.181-.291-.476-.194-.738.096-.262.346-.437.626-.437h2.001l.708-1.987c.097-.261.346-.434.625-.434s.528.173.625.434l.708,1.987h2.001c.28,0,.53.175.626.438s.017.558-.197.739l-1.577,1.285.652,1.987c.089.269-.001.565-.226.738-.225.173-.534.185-.771.031l-1.836-1.196-1.805,1.208c-.112.075-.242.113-.371.113Zm19.671-3.762h-2c-1.381,0-2.5,1.119-2.5,2.5v9c0,1.381,1.119,2.5,2.5,2.5h2c1.381,0,2.5-1.119,2.5-2.5v-9c0-1.381-1.119-2.5-2.5-2.5Zm-17.5,6h-1.5c-1.381,0-2.5,1.119-2.5,2.5v3c0,1.381,1.119,2.5,2.5,2.5h1.5c1.381,0,2.5-1.119,2.5-2.5v-3c0-1.381-1.119-2.5-2.5-2.5Zm8.5-3h-1.5c-1.381,0-2.5,1.119-2.5,2.5v6c0,1.381,1.119,2.5,2.5,2.5h1.5c1.381,0,2.5-1.119,2.5-2.5v-6c0-1.381-1.119-2.5-2.5-2.5Z" />
             </svg>
             <div className="flex flex-col">
-              <span className="font-bold cursor-pointer">Twoje punkty:</span>
-              <span className="font-medium"> {score}</span>
+              <span className="font-bold cursor-pointer text-sm">Twoje punkty:</span>
+              <span className="text-sm"> {score}</span>
             </div>
           </div>
         </div>

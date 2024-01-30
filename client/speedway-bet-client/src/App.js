@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import "./App.css";
 import CreateRoom from "./Components/CreateRoom/CreateRoom";
 import GameComponent from "./Components/GameComponent/GameComponent";
-
+import { Link } from 'react-router-dom';
 const socket = io.connect("http://localhost:3001");
 
 function App() {
@@ -14,6 +14,12 @@ function App() {
   const [host, setHost] = useState(false);
   const [raceValue, setRaceValue] = useState("15");
   const [cannotJoin, setCannotJoin] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   useEffect(() => {
     socket.on("updateNumerOfUsers", (data) => {
       setCurrentRoomUsersNumber(data.usersNumber);
@@ -55,7 +61,7 @@ function App() {
 		C33.817,14.739,34.326,16.53,34.833,18.322z"
             />
           </svg>
-          <span class="font-semibold text-xl tracking-wider italic">
+          <span onClick={() => handleRefresh()} class="font-semibold text-xl cursor-pointer tracking-wider italic">
             Speedway-Bet
           </span>
         </div>
@@ -70,6 +76,8 @@ function App() {
             socket={socket}
             raceValue={raceValue}
             setRaceValue={setRaceValue}
+            setUserName={setUserName}
+            userName={userName}
           ></CreateRoom>
         )}
         {currentRoomId && !cannotJoin && (
@@ -83,6 +91,7 @@ function App() {
             raceValue={raceValue}
             setRaceValue={setRaceValue}
             cannotJoin={cannotJoin}
+            userName={userName}
           ></GameComponent>
         )}
       </div>

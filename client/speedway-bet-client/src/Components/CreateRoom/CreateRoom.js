@@ -11,7 +11,10 @@ export default function CreateRoom(props) {
   const setRaceValue = props.setRaceValue;
 
   const setHost = props.setHost;
+  const setUserName = props.setUserName;
+  const userName = props.userName;
   const host = props.host;
+  const [userNameError, setUserNameError] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
   const handleSelectChange = (event) => {
     const value = event.target.value;
@@ -19,13 +22,15 @@ export default function CreateRoom(props) {
     setRaceValue(value);
   };
 
-  const [userName, setUserName] = useState("");
-
   const handleChange = (e) => {
     setUserName(e.target.value);
   };
 
   const generateRoom = () => {
+    if (userName.length <= 0) {
+      setUserNameError("Nazwa użytkownika jest wymagana");
+      return;
+    }
     const uuid = uuidv4();
     setRoomId(uuid);
     setCurrentRace(1);
@@ -34,7 +39,6 @@ export default function CreateRoom(props) {
       raceLimit: raceValue,
       userName: userName,
     });
-
 
     socket.emit("join_room", {
       userName: userName,
@@ -46,7 +50,7 @@ export default function CreateRoom(props) {
     if (roomId !== "") {
       socket.emit("join_room", {
         roomId: roomId,
-        userName: userName
+        userName: userName,
       });
     }
   };
@@ -60,18 +64,35 @@ export default function CreateRoom(props) {
   return (
     <div className="container mx-auto">
       <div class="bg-gray-100 w-full border border-gray-200 p-4">
-        <div className="container mx-auto p-4">
-          <TextField
+        <div className="container flex mx-auto mb-1">
+        <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-6 h-6 mr-2"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12 20a8 8 0 0 1-5-1.8v-.6c0-1.8 1.5-3.3 3.3-3.3h3.4c1.8 0 3.3 1.5 3.3 3.3v.6a8 8 0 0 1-5 1.8ZM2 12a10 10 0 1 1 10 10A10 10 0 0 1 2 12Zm10-5a3.3 3.3 0 0 0-3.3 3.3c0 1.7 1.5 3.2 3.3 3.2 1.8 0 3.3-1.5 3.3-3.3C15.3 8.6 13.8 7 12 7Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+       
+        </div>
+        <div className="mb-4">
+        <TextField
             label="Nazwa użytkownika"
             placeholder="Podaj swoją nazwę użytkownika"
             onChange={handleChange}
             value={userName}
           />
+          <span className="text-sm font-semibold text-rose-600">{userNameError}</span>
         </div>
         {
           <button
             onClick={() => generateRoom()}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center"
+            className="bg-blue-950 hover:bg-blue-800 text-white text-sm  py-2 px-4 rounded inline-flex items-center mt-3"
           >
             Utwórz pokój
           </button>
@@ -95,20 +116,20 @@ export default function CreateRoom(props) {
             </select>
           </div>
         </section>
-        <p className="block mb-2 text-sm font-medium text-gray-950 mt-5">
-          Jeśli posiadasz id pokoju, wklej go poniżej
+        <p className="block mb-1 text-sm font-semibold text-gray-950 mt-2">
+          Jeśli posiadasz ID pokoju, wklej go poniżej
         </p>
         <input
           value={roomId}
           onChange={(event) => setRoomId(event.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-4"
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-1"
           type="text"
           placeholder="Podaj id pokoju"
         ></input>
         <p>{roomId}</p>
         <button
           onClick={joinRoom}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded inline-flex items-center mt-4"
+          className="bg-blue-950 hover:bg-blue-800 text-white text-sm py-2 px-4 rounded inline-flex items-center mt-4"
         >
           Przejdź do pokoju
         </button>

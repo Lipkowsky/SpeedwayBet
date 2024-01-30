@@ -2,7 +2,15 @@
 import React from "react";
 import { useDrag, useDrop } from "react-dnd";
 
-const DraggableItem = ({ id, name,bg, boxShadow,textColor, index, moveItem }) => {
+const DraggableItem = ({
+  id,
+  name,
+  bg,
+  boxShadow,
+  textColor,
+  index,
+  moveItem,
+}) => {
   const [, ref] = useDrag({
     type: "ITEM",
     item: { id, index },
@@ -21,9 +29,11 @@ const DraggableItem = ({ id, name,bg, boxShadow,textColor, index, moveItem }) =>
   return (
     <li className="pt-5" ref={(node) => ref(drop(node))}>
       <div
-        className={`draggable font-medium tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-50 ${boxShadow} ${textColor} ${bg}`}
+        className={`draggable text-sm tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-50 ${boxShadow} ${textColor} ${bg}`}
       >
-        <p className="flex">Pozycja: {index+1} {name}</p>
+        <p className="flex">
+          <span className="font-semibold mr-1">Pozycja: {index + 1} </span> {name}
+        </p>
       </div>
     </li>
   );

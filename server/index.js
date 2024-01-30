@@ -38,6 +38,7 @@ io.on("connection", async (socket) => {
         selectedOptions: false,
         host: true,
         score: 0,
+        userName: data.userName
       },
     });
     serverStarter.save();
@@ -48,37 +49,64 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("join_room", async (data) => {
+
     try {
       const tryFindServer = await ServerList.findOne({
         roomId: data.roomId,
       });
 
       if (tryFindServer === null) {
-        const doc = new ServerList({ roomId: data.roomId});
+        const doc = new ServerList({ roomId: data.roomId });
         doc.save();
       }
-      if(tryFindServer?.currentRace >= 1){
+      if (tryFindServer?.currentRace >= 1) {
         socket.emit("cannot_join", {
           message: "GAME JUST STARTED, YOU CANNOT JOIN TO ROOM",
-        })
-        return; 
+        });
+        return;
       }
     } catch (error) {
       console.log(error);
     }
     socket.join(data.roomId);
+    // DODAWANIE UŻYTKOWNIKA DO LISTY W POKOJU
+    const users = [...io.sockets.adapter.rooms.get(data.roomId)];
 
-    const users = io.sockets.adapter.rooms.get(data.roomId);
+    for (let [index, user] of users.entries()) {
+      if (index !== 0) {
+        const updateServerStatus = await ServerList.findOneAndUpdate(
+          {
+            roomId: data.roomId,
+          },
+          {
+            $push: {
+              players: {
+                id: user,
+                selectedOptions: false,
+                host: false,
+                score: 0,
+                userName: data.userName
+              },
+            },
+          },
+          { new: true }
+        );
+      
+      }
+    
+    }
+    
+
+    const room = io.sockets.adapter.rooms.get(data.roomId);
 
     socket.emit("joined_room", {
       message: `You joined room: ${data.roomId}`,
       roomId: data.roomId,
-      usersNumber: users.size,
-      
+      usersNumber: room.size,
     });
     socket.to(data.roomId).emit("updateNumerOfUsers", {
       message: `Someone joined to: ${data.roomId}`,
-      usersNumber: users.size,
+      usersNumber: room.size,
     });
   });
   // #################################################################################
@@ -104,29 +132,6 @@ io.on("connection", async (socket) => {
       },
       { new: true }
     );
-
-    const users = [...io.sockets.adapter.rooms.get(data.roomId)];
-
-    for (let [index, user] of users.entries()) {
-      if (index !== 0) {
-        const updateServerStatus = await ServerList.findOneAndUpdate(
-          {
-            roomId: data.roomId,
-          },
-          {
-            $push: {
-              players: {
-                id: user,
-                selectedOptions: false,
-                host: false,
-                score: 0,
-              },
-            },
-          },
-          { new: true }
-        );
-      }
-    }
 
     const server = await ServerList.findOne({
       roomId: data.roomId,

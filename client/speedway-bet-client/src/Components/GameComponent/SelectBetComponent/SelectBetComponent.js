@@ -47,8 +47,6 @@ export default function SelectBetComponent(props) {
   // }
 
   const saveRace = () => {
-    console.log("HELMENTS")
-    console.log(helmets);
     socket.emit("save_race", {
       roomId: currentRoomId,
       helmets: helmets,
@@ -62,7 +60,7 @@ export default function SelectBetComponent(props) {
       <main className="flex h-fit flex-col items-center justify-center space-y-4">
         <div>
           <h3 className="italic font-bold">Komunikat:</h3>
-          <p>
+          <p className="text-sm">
             Wybierz kolejność w jakiej zawodnicy dojadą na metę.
           </p>
           <DraggableList items={helmets} setHelmets={setHelmets}/>
@@ -70,7 +68,7 @@ export default function SelectBetComponent(props) {
         <div>
           <button
             onClick={saveRace}
-            className="bg-sky-950  w-full hover:bg-gray-400 text-white font-medium py-2 px-4 rounded inline-flex items-center mt-8"
+            className="bg-sky-950   w-full hover:bg-gray-400 text-white text-sm py-2 px-4 rounded inline-flex items-center mt-8"
           >
             Potwierdź wynik
           </button>

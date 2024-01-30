@@ -16,24 +16,26 @@ export default function DisplayResultGameComponent(props) {
 
   return (
     <div>
-      <main className="flex h-fit flex-col items-center justify-center space-y-4">
-      <div>
+        <main className="flex h-fit flex-col items-left space-y-4">
+        <div>
           <h3 className="italic font-bold">Komunikat:</h3>
-          <p>
-            Wyniki wyścigu
-          </p>
+          <p className="text-sm">Wyniki wyścigu</p>
         </div>
         {helmets.map((helmet, index) => (
           <div
-            className={`draggable font-medium tracking-tight antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-50 ${helmet.boxShadow} ${helmet.textColor} ${helmet.bg}`}
+            className={`draggable text-sm tracking-tight  antialiased hover:subpixel-antialiased space-x-6 border rounded shadow-lg p-2 h-15 w-60 ${helmet.boxShadow} ${helmet.textColor} ${helmet.bg}`}
           >
-            <p className="flex">Pozycja: {index} {helmet.name}</p>
+            <p className="flex text-sm">
+              <span className="font-semibold mr-1">
+                Pozycja: {index + 1} {helmet.name}
+              </span>
+            </p>
           </div>
         ))}
         <div>
           {host && (
             <button
-            className="bg-sky-950  w-full hover:bg-gray-400 text-white font-medium py-2 px-4 rounded inline-flex items-center mt-8"
+              className="bg-sky-950  w-full hover:bg-gray-400 text-white text-sm py-2 px-4 rounded inline-flex items-center mt-8"
               onClick={nextRaceEvent}
             >
               Przejdź do następnego wyścigu
@@ -41,6 +43,7 @@ export default function DisplayResultGameComponent(props) {
           )}
         </div>
       </main>
-    </div>
+  </div>
+
   );
 }
