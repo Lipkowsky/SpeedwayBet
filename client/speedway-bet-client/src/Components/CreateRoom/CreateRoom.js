@@ -48,6 +48,12 @@ export default function CreateRoom(props) {
 
   const joinRoom = () => {
     if (roomId !== "") {
+
+      if (userName.length <= 0) {
+        setUserNameError("Nazwa użytkownika jest wymagana");
+        return;
+      }
+
       socket.emit("join_room", {
         roomId: roomId,
         userName: userName,
