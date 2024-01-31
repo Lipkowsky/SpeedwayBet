@@ -13,11 +13,13 @@ app.use(
   express.static(path.join(__dirname, "../client/speedway-bet-client/build"))
 );
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/speedway-bet-client/build/index.html"));
+  res.sendFile(
+    path.join(__dirname, "../client/speedway-bet-client/build/index.html")
+  );
 });
 const io = new Server(server, {
   cors: {
-    origin: "https://sppedway-bet.onrender.com",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
 });
@@ -56,8 +58,9 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("join_room", async (data) => {
+    let tryFindServer = null;
     try {
-      const tryFindServer = await ServerList.findOne({
+      tryFindServer = await ServerList.findOne({
         roomId: data.roomId,
       });
 
@@ -78,26 +81,29 @@ io.on("connection", async (socket) => {
     // DODAWANIE UŻYTKOWNIKA DO LISTY W POKOJU
     const users = [...io.sockets.adapter.rooms.get(data.roomId)];
 
-    for (let [index, user] of users.entries()) {
-      if (index !== 0) {
-        const updateServerStatus = await ServerList.findOneAndUpdate(
-          {
-            roomId: data.roomId,
-          },
-          {
-            $push: {
-              players: {
-                id: user,
-                selectedOptions: false,
-                host: false,
-                score: 0,
-                userName: data.userName,
-              },
+    const playersInRoom = tryFindServer.players;
+
+    const tryFindPlayerById = playersInRoom.find(
+      (item) => item.id === socket.id
+    );
+    if (!tryFindPlayerById) {
+      const updateServerStatus = await ServerList.findOneAndUpdate(
+        {
+          roomId: data.roomId,
+        },
+        {
+          $push: {
+            players: {
+              id: socket.id,
+              selectedOptions: false,
+              host: false,
+              score: 0,
+              userName: data.userName,
             },
           },
-          { new: true }
-        );
-      }
+        },
+        { new: true }
+      );
     }
 
     const room = io.sockets.adapter.rooms.get(data.roomId);
@@ -163,8 +169,10 @@ io.on("connection", async (socket) => {
     const server = await ServerList.findOne({
       roomId: data.roomId,
     });
+    console.log(server.players)
     // JEŚLI WSZYSCY ZAZNACZYLI ODPOWIEDŹ TO PRZEJDZ DO PODAWANIA WYNIKÓW
     if (server.players.every((e) => e.selectedOptions)) {
+      console.log("XD")
       io.in(data.roomId).emit("set_game_status", {
         gameStatus: "WAIT_FOR_RESULTS",
       });
