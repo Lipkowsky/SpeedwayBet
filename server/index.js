@@ -17,6 +17,9 @@ app.get("*", (req, res) => {
     path.join(__dirname, "../client/speedway-bet-client/build/index.html")
   );
 });
+
+// https://speedway-bet.onrender.com
+//http://localhost:3000
 const io = new Server(server, {
   cors: {
     origin: "https://speedway-bet.onrender.com",
@@ -161,18 +164,31 @@ io.on("connection", async (socket) => {
       }
     );
 
+    // WYŚLIJ DO NIEGO KOMUNIKAT O OCZEKIWANIU NA WYBÓR INNYCH
+    // socket.emit("set_game_status", {
+    //   gameStatus: "LOADING",
+    // });
+
     const server = await ServerList.findOne({
       roomId: data.roomId,
     });
 
-    // JEŚLI WSZYSCY ZAZNACZYLI ODPOWIEDŹ TO PRZEJDZ DO PODAWANIA WYNIKÓW
-
     if (!server.players.every((e) => e.selectedOptions)) {
-      // WYŚLIJ DO NIEGO KOMUNIKAT O OCZEKIWANIU NA WYBÓR INNYCH
-      socket.emit("set_game_status", {
+      io.to(socket.id).emit("set_game_status", {
         gameStatus: "LOADING",
       });
     }
+
+    if (server.players.every((e) => e.selectedOptions)) {
+      io.in(data.roomId).emit("set_game_status", {
+        gameStatus: "WAIT_FOR_RESULTS",
+      });
+    }
+
+    // JEŚLI WSZYSCY ZAZNACZYLI ODPOWIEDŹ TO PRZEJDZ DO PODAWANIA WYNIKÓW
+    console.log("PLAYERS");
+    console.log(server.players);
+
     if (server.players.every((e) => e.selectedOptions)) {
       io.in(data.roomId).emit("set_game_status", {
         gameStatus: "WAIT_FOR_RESULTS",
