@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "node index.js"
+    "build": "cd ../client/speedway-bet-client && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",
