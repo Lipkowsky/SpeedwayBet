@@ -81,7 +81,7 @@ io.on("connection", async (socket) => {
     // DODAWANIE UŻYTKOWNIKA DO LISTY W POKOJU
     const users = [...io.sockets.adapter.rooms.get(data.roomId)];
 
-    const playersInRoom = tryFindServer?.players || [];
+    const playersInRoom = tryFindServer?.players || null;
 
     const tryFindPlayerById = playersInRoom.find(
       (item) => item.id === socket.id
@@ -172,7 +172,6 @@ io.on("connection", async (socket) => {
 
     // JEŚLI WSZYSCY ZAZNACZYLI ODPOWIEDŹ TO PRZEJDZ DO PODAWANIA WYNIKÓW
     if (server.players.every((e) => e.selectedOptions)) {
-
       io.in(data.roomId).emit("set_game_status", {
         gameStatus: "WAIT_FOR_RESULTS",
       });
