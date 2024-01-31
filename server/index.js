@@ -7,7 +7,14 @@ const mongoose = require("./db");
 app.use(cors());
 const server = http.createServer(app);
 const moongose2 = require("mongoose");
+const path = require("path");
 
+app.use(
+  express.static(path.join(__dirname, "client/speedway-bet-client/build"))
+);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/speedway-bet-client/build/index.html"));
+});
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -259,7 +266,7 @@ io.on("connection", async (socket) => {
         return order === "desc" ? comparison * -1 : comparison;
       };
     };
-  
+
     if (currentRace > parseInt(server.raceLimit)) {
       const players = server.players;
 
@@ -287,6 +294,6 @@ io.on("connection", async (socket) => {
   });
 });
 
-server.listen(3001, () => {
+server.listen(process.env.PORT, () => {
   console.log("SERWER START");
 });
