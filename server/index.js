@@ -45,13 +45,13 @@ io.on("connection", async (socket) => {
     const serverStarter = new ServerList({
       roomId: data.roomId,
       raceLimit: parseInt(data.raceLimit),
-      players: {
-        id: socket.id,
-        selectedOptions: false,
-        host: true,
-        score: 0,
-        userName: data.userName,
-      },
+      // players: {
+      //   id: socket.id,
+      //   selectedOptions: false,
+      //   host: true,
+      //   score: 0,
+      //   userName: data.userName,
+      // },
     });
     serverStarter.save();
     socket.emit("SET_HOST", {
@@ -68,7 +68,16 @@ io.on("connection", async (socket) => {
       });
 
       if (tryFindServer === null) {
-        const doc = new ServerList({ roomId: data.roomId });
+        const doc = new ServerList({
+          roomId: data.roomId,
+          players: {
+            id: socket.id,
+            selectedOptions: false,
+            host: true,
+            score: 0,
+            userName: data.userName,
+          },
+        });
         doc.save();
       }
       if (tryFindServer?.currentRace >= 1) {
@@ -83,7 +92,8 @@ io.on("connection", async (socket) => {
     socket.join(data.roomId);
     // DODAWANIE UŻYTKOWNIKA DO LISTY W POKOJU
     const users = [...io.sockets.adapter.rooms.get(data.roomId)];
-
+    console.log("tryFindServer");
+    console.log(tryFindServer);
     const playersInRoom = tryFindServer?.players;
 
     console.log("TU JEST BŁĄD");
