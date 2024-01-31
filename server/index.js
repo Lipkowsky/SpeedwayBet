@@ -19,7 +19,7 @@ app.get("*", (req, res) => {
 });
 const io = new Server(server, {
   cors: {
-    origin: "https://sppedway-bet.onrender.com",
+    origin: "https://speedway-bet.onrender.com",
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
 });
