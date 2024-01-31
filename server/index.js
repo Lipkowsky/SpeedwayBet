@@ -81,7 +81,7 @@ io.on("connection", async (socket) => {
     // DODAWANIE UŻYTKOWNIKA DO LISTY W POKOJU
     const users = [...io.sockets.adapter.rooms.get(data.roomId)];
 
-    const playersInRoom = tryFindServer.players;
+    const playersInRoom = tryFindServer?.players || [];
 
     const tryFindPlayerById = playersInRoom.find(
       (item) => item.id === socket.id
