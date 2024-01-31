@@ -38,7 +38,7 @@ io.on("connection", async (socket) => {
         selectedOptions: false,
         host: true,
         score: 0,
-        userName: data.userName
+        userName: data.userName,
       },
     });
     serverStarter.save();
@@ -49,7 +49,6 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("join_room", async (data) => {
-
     try {
       const tryFindServer = await ServerList.findOne({
         roomId: data.roomId,
@@ -85,17 +84,14 @@ io.on("connection", async (socket) => {
                 selectedOptions: false,
                 host: false,
                 score: 0,
-                userName: data.userName
+                userName: data.userName,
               },
             },
           },
           { new: true }
         );
-      
       }
-    
     }
-    
 
     const room = io.sockets.adapter.rooms.get(data.roomId);
 
@@ -246,6 +242,41 @@ io.on("connection", async (socket) => {
           score: player.score,
         });
       }
+    }
+
+    const compareValues = (key, order = "desc") => {
+      return (a, b) => {
+        const varA = a[key];
+        const varB = b[key];
+
+        let comparison = 0;
+        if (varA > varB) {
+          comparison = 1;
+        } else if (varA < varB) {
+          comparison = -1;
+        }
+
+        return order === "desc" ? comparison * -1 : comparison;
+      };
+    };
+  
+    if (currentRace > parseInt(server.raceLimit)) {
+      const players = server.players;
+
+      let playersMap = players.map((player) => {
+        return {
+          id: player.id,
+          player: player.userName,
+          score: player.score,
+        };
+      });
+      let playersSorted = playersMap.sort(compareValues("score", "desc"));
+
+      io.in(data.roomId).emit("END_GAME", {
+        gameStatus: "END_GAME",
+        playersMap: playersSorted,
+      });
+      return;
     }
   });
 

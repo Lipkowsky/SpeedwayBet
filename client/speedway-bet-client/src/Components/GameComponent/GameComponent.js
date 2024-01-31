@@ -5,7 +5,7 @@ import SelectBetComponent from "./SelectBetComponent/SelectBetComponent";
 import LoadingGameComponent from "./LoadingGameComponent/LoadingGameComponent";
 import SelectGameRaceComponent from "./EnterResultGameComponent/SelectGameRaceComponent";
 import DisplayResultGameComponent from "./DisplayResultGameComponent/DisplayResultGameComponent";
-
+import EndGame from "./EndGame/EndGame";
 export default function GameComponent(props) {
   const socket = props.socket;
   const currentRoomId = props.currentRoomId;
@@ -19,8 +19,8 @@ export default function GameComponent(props) {
 
   const [gameStatus, setGameStatusType] = useState("BEFORE_START");
   const [score, setScoreValue] = useState(0);
-  const [endGame, setEndGame] = useState(false);
 
+  const [playersMap, setPlayersMap] = useState([]);
   const [raceResults, setRaceResults] = useState(null);
 
   useEffect(() => {
@@ -45,16 +45,19 @@ export default function GameComponent(props) {
   }, [socket]);
 
   useEffect(() => {
+    socket.on("END_GAME", (data) => {
+      setGameStatusType(data.gameStatus);
+      setPlayersMap(data.playersMap);
+    });
+  }, [socket]);
+
+  useEffect(() => {
     socket.on("update_score_user", (data) => {
       setScoreValue(data.score);
     });
   }, [socket]);
 
-  useEffect(() => {
-    if (Number(currentRace) > Number(raceValue)) {
-      setEndGame(true);
-    }
-  }, [currentRace]);
+
 
   return (
     <div class="h-screen flex">
@@ -92,7 +95,9 @@ export default function GameComponent(props) {
               <path d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
             </svg>
             <div className="flex flex-col">
-              <span className="font-bold cursor-pointer text-sm">ID pokoju:</span>
+              <span className="font-bold cursor-pointer text-sm">
+                ID pokoju:
+              </span>
               <span className="font-medium text-sm">{currentRoomId}</span>
             </div>
           </div>
@@ -111,7 +116,10 @@ export default function GameComponent(props) {
               <span className="font-bold cursor-pointer text-sm">
                 Liczba użytkowników:
               </span>
-              <span className="font-medium text-sm"> {currentRoomUsersNumber}</span>
+              <span className="font-medium text-sm">
+                {" "}
+                {currentRoomUsersNumber}
+              </span>
             </div>
           </div>
 
@@ -147,7 +155,9 @@ export default function GameComponent(props) {
               <path d="m17.829,7.762c-.141,0-.282-.045-.4-.133-.227-.17-.321-.464-.236-.734l.627-2.011-1.585-1.29c-.213-.181-.291-.476-.194-.738.096-.262.346-.437.626-.437h2.001l.708-1.987c.097-.261.346-.434.625-.434s.528.173.625.434l.708,1.987h2.001c.28,0,.53.175.626.438s.017.558-.197.739l-1.577,1.285.652,1.987c.089.269-.001.565-.226.738-.225.173-.534.185-.771.031l-1.836-1.196-1.805,1.208c-.112.075-.242.113-.371.113Zm-8,3c-.141,0-.282-.045-.4-.133-.227-.17-.321-.464-.236-.734l.627-2.011-1.585-1.29c-.213-.181-.291-.476-.194-.738.096-.262.346-.437.626-.437h2.001l.708-1.987c.097-.261.346-.434.625-.434s.528.173.625.434l.708,1.987h2.001c.28,0,.53.175.626.438s.017.558-.197.739l-1.577,1.285.652,1.987c.089.269-.001.565-.226.738-.225.173-.534.185-.771.031l-1.836-1.196-1.805,1.208c-.112.075-.242.113-.371.113ZM1.829,13.762c-.141,0-.282-.045-.4-.133-.227-.17-.321-.464-.236-.734l.627-2.011-1.585-1.29c-.213-.181-.291-.476-.194-.738.096-.262.346-.437.626-.437h2.001l.708-1.987c.097-.261.346-.434.625-.434s.528.173.625.434l.708,1.987h2.001c.28,0,.53.175.626.438s.017.558-.197.739l-1.577,1.285.652,1.987c.089.269-.001.565-.226.738-.225.173-.534.185-.771.031l-1.836-1.196-1.805,1.208c-.112.075-.242.113-.371.113Zm19.671-3.762h-2c-1.381,0-2.5,1.119-2.5,2.5v9c0,1.381,1.119,2.5,2.5,2.5h2c1.381,0,2.5-1.119,2.5-2.5v-9c0-1.381-1.119-2.5-2.5-2.5Zm-17.5,6h-1.5c-1.381,0-2.5,1.119-2.5,2.5v3c0,1.381,1.119,2.5,2.5,2.5h1.5c1.381,0,2.5-1.119,2.5-2.5v-3c0-1.381-1.119-2.5-2.5-2.5Zm8.5-3h-1.5c-1.381,0-2.5,1.119-2.5,2.5v6c0,1.381,1.119,2.5,2.5,2.5h1.5c1.381,0,2.5-1.119,2.5-2.5v-6c0-1.381-1.119-2.5-2.5-2.5Z" />
             </svg>
             <div className="flex flex-col">
-              <span className="font-bold cursor-pointer text-sm">Twoje punkty:</span>
+              <span className="font-bold cursor-pointer text-sm">
+                Twoje punkty:
+              </span>
               <span className="text-sm"> {score}</span>
             </div>
           </div>
@@ -186,7 +196,7 @@ export default function GameComponent(props) {
               <LoadingGameComponent />
             </div>
           )}
-          {gameStatus === "RESULTS_DONE" && !endGame && (
+          {gameStatus === "RESULTS_DONE" && (
             <DisplayResultGameComponent
               socket={socket}
               host={host}
@@ -195,11 +205,7 @@ export default function GameComponent(props) {
             />
           )}
 
-          {endGame && (
-            <div>
-              Koniec gry, ilość wyścigów: {currentRace} / {raceValue}
-            </div>
-          )}
+          {gameStatus === "END_GAME" && <EndGame playersMap={playersMap}></EndGame>}
         </div>
       </div>
     </div>
