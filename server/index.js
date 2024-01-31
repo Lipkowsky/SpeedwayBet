@@ -82,8 +82,8 @@ io.on("connection", async (socket) => {
     const users = [...io.sockets.adapter.rooms.get(data.roomId)];
 
     const playersInRoom = tryFindServer?.players || null;
-
-    const tryFindPlayerById = playersInRoom.find(
+    
+    const tryFindPlayerById = playersInRoom?.find(
       (item) => item.id === socket.id
     );
     if (!tryFindPlayerById) {
