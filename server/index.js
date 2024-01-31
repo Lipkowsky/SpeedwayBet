@@ -9,12 +9,8 @@ const server = http.createServer(app);
 const moongose2 = require("mongoose");
 const path = require("path");
 
-app.use(
-  express.static(path.join(__dirname, "client/speedway-bet-client/build"))
-);
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/speedway-bet-client/build/index.html"));
-});
+app.use(express.static(path.join(__dirname, '../public')));
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
