@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "node server/src/index.js",
+    "build": "cd client/speedway-bet-client && npm run build"
   },
   "author": "",
   "license": "ISC",
