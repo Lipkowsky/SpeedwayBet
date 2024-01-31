@@ -85,7 +85,10 @@ io.on("connection", async (socket) => {
     const users = [...io.sockets.adapter.rooms.get(data.roomId)];
 
     const playersInRoom = tryFindServer?.players || null;
-
+ 
+    console.log("TU JEST BŁĄD")
+    console.log(playersInRoom)
+    // TODO FIX 
     const tryFindPlayerById = playersInRoom?.find(
       (item) => item.id === socket.id
     );
