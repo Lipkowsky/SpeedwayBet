@@ -61,7 +61,6 @@ export default function GameComponent(props) {
 
   return (
     <div class="h-screen flex">
-      {gameStatus}
       <div className="w-2/4 bg-gray-100 h-fit min-h-auto border border-gray-100 p-4 mr-1">
         <div class="flex flex-col space-y-2">
           <div class="bg-gray-200 rounded flex p-2">
