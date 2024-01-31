@@ -5,7 +5,7 @@ import "./App.css";
 import CreateRoom from "./Components/CreateRoom/CreateRoom";
 import GameComponent from "./Components/GameComponent/GameComponent";
 import { Link } from 'react-router-dom';
-const socket = io.connect("http://localhost:3001");
+const socket = io.connect("https://sppedway-bet.onrender.com");
 
 function App() {
   const [currentRoomId, setCurrentRoomId] = useState("");

@@ -19,7 +19,7 @@ app.get("*", (req, res) => {
 });
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://sppedway-bet.onrender.com",
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
 });
@@ -169,10 +169,10 @@ io.on("connection", async (socket) => {
     const server = await ServerList.findOne({
       roomId: data.roomId,
     });
-    console.log(server.players)
+
     // JEŚLI WSZYSCY ZAZNACZYLI ODPOWIEDŹ TO PRZEJDZ DO PODAWANIA WYNIKÓW
     if (server.players.every((e) => e.selectedOptions)) {
-      console.log("XD")
+
       io.in(data.roomId).emit("set_game_status", {
         gameStatus: "WAIT_FOR_RESULTS",
       });
