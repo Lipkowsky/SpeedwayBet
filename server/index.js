@@ -82,7 +82,7 @@ io.on("connection", async (socket) => {
     const users = [...io.sockets.adapter.rooms.get(data.roomId)];
 
     const playersInRoom = tryFindServer?.players || null;
-    
+
     const tryFindPlayerById = playersInRoom?.find(
       (item) => item.id === socket.id
     );
@@ -161,16 +161,18 @@ io.on("connection", async (socket) => {
       }
     );
 
-    // WYŚLIJ DO NIEGO KOMUNIKAT O OCZEKIWANIU NA WYBÓR INNYCH
-    socket.emit("set_game_status", {
-      gameStatus: "LOADING",
-    });
-
     const server = await ServerList.findOne({
       roomId: data.roomId,
     });
 
     // JEŚLI WSZYSCY ZAZNACZYLI ODPOWIEDŹ TO PRZEJDZ DO PODAWANIA WYNIKÓW
+
+    if (!server.players.every((e) => e.selectedOptions)) {
+      // WYŚLIJ DO NIEGO KOMUNIKAT O OCZEKIWANIU NA WYBÓR INNYCH
+      socket.emit("set_game_status", {
+        gameStatus: "LOADING",
+      });
+    }
     if (server.players.every((e) => e.selectedOptions)) {
       io.in(data.roomId).emit("set_game_status", {
         gameStatus: "WAIT_FOR_RESULTS",
